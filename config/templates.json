@@ -1,0 +1,59 @@
+{
+  "custom_template_1": {
+    "name": "网络专用模板",
+    "description": "仅提取网络相关信息",
+    "sections": [
+      {
+        "name": "网络适配器",
+        "items": [
+          "网络适配器1",
+          "网络适配器2",
+          "网络适配器3"
+        ]
+      },
+      {
+        "name": "网络配置",
+        "items": [
+          "主 IP 地址",
+          "主 MAC 地址",
+          "IP地址/子网掩码 (有线)",
+          "网关地址 (有线)"
+        ]
+      }
+    ]
+  },
+  "custom_template_2": {
+    "name": "内存检测模板",
+    "description": "专门检测内存信息",
+    "sections": [
+      {
+        "name": "内存概览",
+        "items": [
+          "系统内存"
+        ]
+      },
+      {
+        "name": "DIMM1详情",
+        "items": [
+          "DIMM1: 模块名称",
+          "DIMM1: 序列号",
+          "DIMM1: 制造日期",
+          "DIMM1: 模块容量",
+          "DIMM1: 存取速度",
+          "DIMM1: DRAM 制造商"
+        ]
+      },
+      {
+        "name": "DIMM3详情",
+        "items": [
+          "DIMM3: 模块名称",
+          "DIMM3: 序列号",
+          "DIMM3: 制造日期",
+          "DIMM3: 模块容量",
+          "DIMM3: 存取速度",
+          "DIMM3: DRAM 制造商"
+        ]
+      }
+    ]
+  }
+}
