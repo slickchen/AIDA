@@ -54,6 +54,39 @@ class AIDA64Parser:
             ]
         }
     
+    def _read_file_with_encoding(self, file_path: str) -> str:
+        """
+        自动检测并读取文件，支持多种编码
+        """
+        # 常见的Windows中文编码
+        encodings = ['gbk', 'gb2312', 'gb18030', 'utf-8', 'big5', 'ansi', 'cp936']
+        
+        # 首先尝试使用chardet自动检测编码（如果可用）
+        try:
+            import chardet
+            with open(file_path, 'rb') as f:
+                raw_data = f.read()
+                result = chardet.detect(raw_data)
+                encoding = result['encoding']
+                try:
+                    return raw_data.decode(encoding)
+                except:
+                    pass
+        except ImportError:
+            pass
+        
+        # 手动尝试各种编码
+        for encoding in encodings:
+            try:
+                with open(file_path, 'r', encoding=encoding) as f:
+                    return f.read()
+            except UnicodeDecodeError:
+                continue
+        
+        # 如果所有编码都失败，尝试以二进制方式读取并忽略错误
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            return f.read()
+    
     def parse_file(self, file_path: str, selected_items: List[str] = None) -> List[Dict]:
         """
         解析AIDA64报告文件
@@ -66,8 +99,8 @@ class AIDA64Parser:
             解析结果列表，每个元素是 {'项目': ..., '值': ...}
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            # 自动检测文件编码
+            content = self._read_file_with_encoding(file_path)
             
             all_data = []
             
@@ -315,18 +348,13 @@ class AIDA64Parser:
             line = line.strip()
             if line:
                 # 尝试匹配软件名和版本
-                # 格式: 软件名 版本 ...
                 parts = line.split()
                 if len(parts) >= 2:
-                    # 尝试找到版本号开始的位置
                     for i in range(1, len(parts)):
                         if re.match(r'[\d\.]+', parts[i]):
                             software_name = ' '.join(parts[:i])
                             version = parts[i]
-                            
-                            # 清理版本号
                             version = re.sub(r'[^\d\.]', '', version)
-                            
                             data.append({'项目': software_name, '值': version})
                             break
         
@@ -365,16 +393,9 @@ class AIDA64Parser:
         """
         with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
             for filename, file_data in data.items():
-                # 创建DataFrame
                 df = pd.DataFrame(file_data)
-                
-                # 清理文件名（去掉特殊字符）
                 sheet_name = re.sub(r'[\\/*\[\]:?]', '', filename[:31])
-                
-                # 写入Excel
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
-                
-                # 调整列宽
                 worksheet = writer.sheets[sheet_name]
                 worksheet.column_dimensions['A'].width = 40
                 worksheet.column_dimensions['B'].width = 50
