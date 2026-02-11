@@ -72,28 +72,28 @@ class AIDA64Parser:
             all_data = []
             
             # 解析系统概述
-            if selected_items is None or any(item in self.standard_items['系统概述'] for item in selected_items):
+            if selected_items is None or any(item in self.standard_items['系统概述'] for item in (selected_items or [])):
                 system_data = self._parse_system_summary(content, selected_items)
                 all_data.extend(system_data)
             
             # 解析DMI信息（在系统概述中）
-            if selected_items is None or any(item.startswith('DMI') for item in selected_items):
+            if selected_items is None or any(item.startswith('DMI') for item in (selected_items or [])):
                 dmi_data = self._parse_dmi_info(content, selected_items)
                 all_data.extend(dmi_data)
             
             # 解析SPD信息
-            if selected_items is None or any(item.startswith('DIMM') for item in selected_items):
+            if selected_items is None or any(item.startswith('DIMM') for item in (selected_items or [])):
                 spd_data = self._parse_spd_info(content, selected_items)
                 all_data.extend(spd_data)
             
             # 解析磁盘分区
-            if selected_items is None or any(item.startswith(('C:', 'D:', 'E:', '分区')):
-                    self._parse_disk_info(content, selected_items)
+            if selected_items is None or any(item.startswith(('C:', 'D:', 'E:', '分区')) for item in (selected_items or [])):
+                disk_data = self._parse_disk_info(content, selected_items)
                 all_data.extend(disk_data)
             
             # 解析网络信息
-            if selected_items is None or any(item.startswith(('网络适配器', 'IP地址', 'MAC地址')):
-                    self._parse_network_info(content, selected_items)
+            if selected_items is None or any(item.startswith(('网络适配器', 'IP地址', 'MAC地址')) for item in (selected_items or [])):
+                network_data = self._parse_network_info(content, selected_items)
                 all_data.extend(network_data)
             
             # 解析已安装程序
